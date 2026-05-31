@@ -1,0 +1,36 @@
+name: PTT Bot Auto Run
+
+on:
+  schedule:
+    - cron: '*/6 * * * *'  # 這裡就是 6 分鐘跑一次的魔法
+  workflow_dispatch:
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 1. 把專案程式碼抓進主機
+      uses: actions/checkout@v4
+
+    - name: 2. 安裝 Python 環境
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+
+    - name: 3. 安裝爬蟲套件
+      run: pip install -r requirements.txt
+
+    - name: 4. 執行 PTT 爬蟲程式
+      env:
+        TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: python ptt_bot.py
+
+    - name: 5. 自動將記憶檔存檔並推回倉庫
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add ptt_history.txt ptt_heartbeat.txt || true 
+        git commit -m "自動更新巡邏記憶檔 [skip ci]" || true
+        git push || true
