@@ -2,8 +2,8 @@ name: PTT Bot Auto Run
 
 on:
   schedule:
-    - cron: '*/6 * * * *'  # 這裡就是 6 分鐘跑一次的魔法
-  workflow_dispatch:
+    - cron: '*/5 * * * *'  # 每 5 分鐘跑一次
+  workflow_dispatch:       # 允許手動點擊按鈕測試
 
 jobs:
   run-bot:
